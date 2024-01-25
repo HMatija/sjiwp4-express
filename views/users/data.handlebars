@@ -1,0 +1,82 @@
+<div class="p-2">
+    {{#if result.display_form}}
+    <form method="post" actions="/users/data" class="flex flex-col gap-2 ">
+        <div class="pb-2 flex flex-col">
+            <label>Ime i prezime</label>
+            <input type="text" name="name" value="{{user.name}}" class="bg-neutral" />
+        </div>
+        <div class="pb-2 flex flex-col">
+            <label>E-mail adresa</label>
+            <input type="email" name="email" value="{{user.email}}" class="bg-neutral" />
+        </div>
+        <div class="pb-2 flex flex-col">
+            <label>Zaporka</label>
+            <input type="password" name="password" class="bg-neutral" />
+        </div>
+        <div class="pb-2 flex gap-2">
+            <input type="submit" value="Potvrdi" class="flex-1 btn btn-primary" />
+            <input type="reset" value="Poništi" class="flex-1 btn btn-warning" />
+        </div>
+    </form>
+    {{/if}}
+
+    {{#if result.validation_error}}
+    <div class="mt-4">
+        <div class="card w-96 bg-error text-black">
+            <div class="card-body">
+                <h2 class="card-title">Greška!</h2>
+                <p>
+                    Dogodila se greška prilikom provjere podataka, provjerite svoj unos
+                    i pokušajte ponovno!
+                </p>
+            </div>
+        </div>
+    </div>
+    {{/if}}
+
+    {{#if result.email_in_use}}
+    <div class="mt-4">
+        <div class="card w-96 bg-error text-black">
+            <div class="card-body">
+                <h2 class="card-title">Greška!</h2>
+                <p>
+                    E-mail adresa koju ste upisali je već u upotrebi!
+                </p>
+            </div>
+        </div>
+    </div>
+    {{/if}}
+
+    {{#if result.success}}
+    <div class="mt-4">
+        <div class="card w-96 bg-primary text-primary-content">
+            <div class="card-body">
+                <h2 class="card-title">Uspjeh!</h2>
+                <p>
+                    Uspješno ste promijenili podatke, sada ćemo vas odjaviti!
+                </p>
+                <div class="card-actions justify-end">
+                </div>
+            </div>
+        </div>
+    </div>
+    {{/if}}
+</div>
+<script>
+    setTimeout(()=> {
+        window.location = "/users/signout";
+    },3000);
+</script>
+
+{{#if result.database_error}}
+            <div class="mt-4">
+                <div class="card w-96 bg-error text-black">
+                    <div class="card-body">
+                        <h2 class="card-title">Greška!</h2>
+                        <p>
+                            Dogodila se greška prilikom spremanja podataka, kontaktirajte administratora!
+                        </p>
+                    </div>
+                </div>
+            </div>
+            {{/if}}
