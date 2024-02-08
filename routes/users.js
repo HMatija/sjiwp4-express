@@ -8,9 +8,8 @@ const bcrypt = require("bcrypt");
 // GET /users/data
 router.get("/data", authRequired, function (req, res, next) {
   res.render("users/data", { result: { display_form: true } });
-  
-
 });
+
 const schema_data = Joi.object({
   name: Joi.string().min(3).max(50).required(),
   email: Joi.string().email().max(50).required(),
@@ -25,64 +24,63 @@ router.post("/data", authRequired, function (req, res, next) {
     res.render("users/data", { result: { validation_error: true, display_form: true } });
     return;
   }
-const newName =req.body.name;
-const newEmail =req.body.email;
-const newPassword =req.body.password;
-const currentUser =req.user;
 
-let emailChanged = false;
-if (newEmail !== currentUser.email){
-  if (!checkEmailUnique(newEmail)){
-    res.render("users/data,", {result:{email_in_use: true, display_form: true}});
+  const newName = req.body.name;
+  const newEmail = req.body.email;
+  const newPassword = req.body.password;
+  const currentUser = req.user;
+
+  let dataChanged = [];
+
+  let emailChanged = false;
+  if (newEmail !== currentUser.email) {
+    if (!checkEmailUnique(newEmail)) {
+      res.render("users/data", { result: { email_in_use: true, display_form: true } });
+      return;
+    }
+    emailChanged = true;
+    dataChanged.push(newEmail);
+  }
+
+  let nameChanged = false;
+  if (newName !== currentUser.name) {
+    nameChanged = true;
+    dataChanged.push(newName);
+  }
+
+  let passwordChanged = false;
+  let passwordHash;
+  if (newPassword && newPassword.length > 0) {
+    passwordHash = bcrypt.hashSync(newPassword, 10);
+    passwordChanged = true;
+    dataChanged.push(passwordHash);
+  }
+
+  if (!emailChanged && !nameChanged && !passwordChanged) {
+    res.render("users/data", { result: { display_form: true } });
     return;
   }
-  emailChanged = true;
-  dataChanged.push(newEmail)
-}
 
-let nameChanged = false;
-if (newName !== currentUser.name){
-  nameChanged = true;
-  dataName.push(newName)
-}
+  let query = "UPDATE users SET";
+  if (emailChanged) query += " email = ?,";
+  if (nameChanged) query += " name = ?,";
+  if (passwordChanged) query += " password = ?,";
+  query = query.slice(0, -1);
+  query += " WHERE email = ?;";
+  dataChanged.push(currentUser.email);
 
-let passwordChanged = false;
-let passwordHash;
-if (newPassword && newPassword.length > 0){
- passwordHash = bcrypt.hashSync(newPassword, 10);
- passwordChanged = true;
- dataPassword.push(newPassword)
-}
+  const stmt = db.prepare(query);
+  const updateResult = stmt.run(dataChanged);
 
-if (emailChanged && !nameChanged && !passwordChanged){
-  res.render("users/data", { result: { display_form: true } });
-return;
-}
-
-
-let query = "UPDATE users SET";
-if(emailChanged) query += "email = ?,";
-if(nameChanged) query += "name = ?,";
-if(passwordChanged) query += "password = ?,";
-query = query.slice(0, -1);
-query += "WHERE email =?;";
-dataChanged.push(currentUser.email);
-
-const stmt = db.prepare(query);
-const updateResult = stmt. run(dataChanged);
-if(updateResult.changes && updateResult.Result === 1){
-  res.render("users/data",{result:{success:true}})
-
-} else{
-  res.render("/users/data",{result:{database_error: true}});
-}
-
-console.log(updateResult);
-return;
+  if (updateResult.changes && updateResult.changes === 1) {
+    res.render("users/data", { result: { success: true } });
+  } else {
+    res.render("users/data", { result: { database_error: true } });
+  }
 });
 
 // GET /users/signout
-router.post("/signout", authRequired, function (req, res, next) {
+router.get("/signout", authRequired, function (req, res, next) {
   res.clearCookie(process.env.AUTH_COOKIE_KEY);
   res.redirect("/");
 });
@@ -131,7 +129,7 @@ router.post("/signin", function (req, res, next) {
   }
 });
 
-// SCHEMA signin
+// SCHEMA signup
 const schema_signup = Joi.object({
   name: Joi.string().min(3).max(50).required(),
   email: Joi.string().email().max(50).required(),
@@ -160,7 +158,7 @@ router.post("/signup", function (req, res, next) {
 
   const passwordHash = bcrypt.hashSync(req.body.password, 10);
   const stmt2 = db.prepare("INSERT INTO users (email, password, name, signed_at, role) VALUES (?, ?, ?, ?, ?);");
-  const insertResult = stmt2.run(req.body.email, passwordHash, req.body.name, Date.now(), "user");
+  const insertResult = stmt2.run(req.body.email, passwordHash, req.body.name, new Date().toISOString(), "user");
 
   if (insertResult.changes && insertResult.changes === 1) {
     res.render("users/signup", { result: { success: true } });
