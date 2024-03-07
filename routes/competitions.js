@@ -96,6 +96,45 @@ else {
     }
 }
 });
+//ZADATAK 2
+//GET/competitions/score_input
+router.get("/score_input/:id", adminRequired, function (req, res, next){
+    const stmt = db.prepare(`
+        SELECT c.id, c.name, c.description, u.name AS CompetitorA, c.apply_till, l.id AS login_id, l.id_user, l.id_competition, l.score
+        FROM competitions c, users u, login l
+        WHERE c.author_id = u.id AND l.id=?
+        ORDER BY c.apply_till
+    `);
+    const result = stmt.all(req.params.id);
+    res.render("competitions/score_input", {result:{items:result}});
+});
+
+
+// SCHEMA score edit
+const schema_ScoreEdit = Joi.object({
+    id: Joi.number().integer().positive().required(),
+    score: Joi.number().min(1).max(50).required()
+});
+
+//POST/competitions/score_change
+router.post("/score_change", adminRequired, function (req, res, next) {
+    // do validation
+    const result = schema_ScoreEdit.validate(req.body);
+
+    if (result.error) {
+        throw new Error("Neispravan poziv");
+        return;
+    }
+
+    const stmt = db.prepare("UPDATE login SET score = ? WHERE id = ?;");
+    const updateResult = stmt.run(req.body.score, req.body.id);
+
+    if (updateResult.changes && updateResult.changes === 1) {
+        res.redirect("/competitions/score_input");
+    } else {
+        //res.render("competitions/form", { result: { database_error: true } });
+    }
+});
 
 
 
