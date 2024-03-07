@@ -95,7 +95,9 @@ else {
         res.render("competitions/form",{result:{database_error:true}});
     }
 }
-})
+});
+
+
 
 // GET /competitions/add
 router.get("/add", adminRequired, function (req, res, next) {
