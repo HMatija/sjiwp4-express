@@ -1,17 +1,16 @@
-<div class="p-2">
-    <div class="overflow-x-auto">
-        <table class="table">
-            <!-- head -->
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>User_ID</th>
-                    <th>Competition_ID</th>
-                    <th>Score</th>
-                </tr>
-            </thead>
-            <!-- body -->
-            <tbody>
+<div class="overflow-x-auto">
+  <table class="table table-xs table-pin-rows table-pin-cols">
+    <thead>
+      <tr>
+        <th></th> 
+        <td>Name</td> 
+        <td>Job</td> 
+        <td>Last Login</td> 
+        <td>Score</td>
+        <th></th> 
+      </tr>
+    </thead> 
+    <tbody>
                 {{#each result.items}}
                 <tr>
                     <th>{{this.login_id}}</th>
@@ -19,14 +18,14 @@
                     <td>{{this.name}}</td>
                     <td>{{this.score}}</td>
                     <td>
+
                         <form method="post" action="/competitions/score_change" class="flex flex-col gap-2">
                             <div class="flex flex-col">
                                 <label>Score</label>
                                 <input id="score" type="number" name="score" value="{{this.score}}" class="bg-neutral" />
                                 <input type="hidden" name="id" value="{{this.login_id}}" />
-                                {{>form_buttons}}
+                                {{form_buttons}}
                             </div>
-                            </form> 
                     </td>
                 </tr>
                 {{/each}}
@@ -34,3 +33,4 @@
         </table>
     </div>
 </div>
+    
