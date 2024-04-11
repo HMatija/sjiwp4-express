@@ -111,9 +111,10 @@ else {
 //GET/competitions/score_input
 router.get("/result/:id", adminRequired, function (req, res, next){
     const stmt = db.prepare(`
-    SELECT c.name AS CompName, u.name AS Competitor, l.id AS login_id, l.id_user, l.score
+    SELECT c.name AS CompName, u.name AS Competitor, l.id AS login_id, l.id_user, l.score 
     FROM competitions c, users u, application l
-    WHERE l.id_user = u.id AND l.id_competitions = c.id AND l.id_competitions = ?;
+    WHERE l.id_user = u.id AND l.id_competitions = c.id AND l.id_competitions = ?
+    ORDER BY score DESC;
     `);
     const result = stmt.all(req.params.id);
     res.render("competitions/result", {result:{items:result}});
@@ -123,7 +124,7 @@ router.get("/result/:id", adminRequired, function (req, res, next){
 // SCHEMA score edit
 const schema_ScoreEdit = Joi.object({
     id: Joi.number().integer().positive().required(),
-    score: Joi.number().min(1).max(50).required()
+    score: Joi.number().min(1).max(500).required()
 });
  
 //POST/competitions/score_change
@@ -138,15 +139,33 @@ router.post("/score_change", adminRequired, function (req, res, next) {
  
     const stmt = db.prepare("UPDATE application SET score = ? WHERE id = ?;");
     const updateResult = stmt.run(req.body.score, req.body.id);
+
  
    
 });
+
+    //slobodan zadatak
+    router.get("/start", adminRequired, function (req, res, next){
+    
+        res.render("competitions/start", { result: { display_form: true } });
+    });
+ 
+ // ZADATAK 3
+ router.get("/report/:id", adminRequired, function (req, res, next){
+    const stmt = db.prepare(`
+    SELECT c.name AS CompName, u.name AS Competitor, l.id AS login_id, l.id_user, l.score,l.apllied_date
+    FROM competitions c, users u, application l
+    WHERE l.id_user = u.id AND l.id_competitions = c.id AND l.id_competitions = ?
+    ORDER BY l.score DESC;
+   
+    `);
+    const result = stmt.all(req.params.id);
+    res.render("competitions/report", {result:{items:result}});
+});
  
  
- 
- 
- 
- 
+
+
 // GET /competitions/add
 router.get("/add", adminRequired, function (req, res, next) {
     res.render("competitions/form", { result: { display_form: true } });

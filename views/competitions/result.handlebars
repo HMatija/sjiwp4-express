@@ -1,23 +1,23 @@
-<div class="p-2">
-    <div class="overflow-x-auto">
-        <table class="table">
-            <!-- head -->
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>User_ID</th>
-                    <th>Competition_ID</th>
-                    <th>Score</th>
-                </tr>
-            </thead>
-            <!-- body -->
-            <tbody>
+<div class="overflow-x-auto">
+  <table class="table">
+    <!-- head -->
+    <thead>
+      <tr>
+        <td>Name</td> 
+        <td>Competition</td> 
+        <td>Score</td> 
+       
+      </tr>
+    </thead>
+    <tbody>
+    
                 {{#each result.items}}
                 <tr>
-                    <th>{{this.login_id}}</th>
+                    
                     <td>{{this.Competitor}}</td>
-                    <td>{{this.name}}</td>
+                    <td>{{this.CompName}}</td>
                     <td>{{this.score}}</td>
+                   
                     <td>
                         <form method="post" action="/competitions/score_change" class="flex flex-col gap-2">
                             <div class="flex flex-col">
