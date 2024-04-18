@@ -1,9 +1,59 @@
 
-
-
-<select class="select select-primary w-full max-w-x">
+<div class ="p-2">
+  {{#if result.display_form}}
+<div class="overflow-x-auto">
+<div>
+<select class="overflow-x-auto select select-primary w-full max-w-x">
   <option>Najčešća pitanja</option>
-  <option>Kako se mogu prijaviti na natjecanje</option>
-  <option>Kako sudjelovati u natjecanju</option>
-  <option>Koliko često se događaju natjecanja</option>
+  <option>Kako se mogu prijaviti na natjecanje?</option>
+  <option>Kako sudjelovati u natjecanju?</option>
+  <option>Koliko često se događaju natjecanja?</option>
 </select>
+<div class="p-2">
+
+        <class="flex flex-col gap-2">
+        <div class="pb-2 flex flex-col">
+            <label>Vaše korisničko ime</label>
+            <input type="text" name="name" class="bg-neutral" required="" minlength="3" maxlength="50" />
+        </div>
+ <div class="pb-2 flex flex-col">
+            <label>Postavite pitanje</label>
+            <textarea name="description" class="bg-neutral" rows="10" required="" minlength="3"></textarea>
+        </div>
+  {{> form_buttons }}
+  {{/if}}
+  {{#if result.validation_error}}
+    {{> validation_error }}
+    {{/if}}
+    
+</div>
+
+</div>
+
+</div>
+</div>
+<footer class="content-normal footer p-6 bg-base-200 text-base-content">
+  <nav>
+    <h6 class="footer-title">Natjecanja</h6> 
+    <a class="link link-hover">Prijava</a>
+    <a class="link link-hover">Izvješće</a>
+    
+  </nav> 
+  <nav>
+    <h6 class="footer-title">Pitanja</h6> 
+    <a class="link link-hover">Postavite pitanje</a>
+  </nav> 
+
+  <form>
+    <h6 class="footer-title">Novosti</h6> 
+    <fieldset class="form-control w-80">
+      <label class="label">
+        <span class="label-text">Enter your email address</span>
+      </label> 
+      <div class="join">
+        <input type="text" placeholder="username@site.com" class="input input-bordered join-item" /> 
+        <button class="btn btn-primary join-item">Subscribe</button>
+      </div>
+    </fieldset>
+  </form>
+</footer>

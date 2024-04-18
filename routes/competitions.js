@@ -196,5 +196,35 @@ router.post("/add", adminRequired, function (req, res, next) {
         res.render("competitions/form", { result: { database_error: true } });
     }
 });
+//slobodan zadatak
+router.get("/start", adminRequired, function (req, res, next) {
+    res.render("competitions/start", { result: { display_form: true } });
+});
+ 
+// SCHEMA add
+const schema_start = Joi.object({
+    name: Joi.string().min(3).max(50).required(),
+    description: Joi.string().min(3).max(1000).required(),
+    apply_till: Joi.date().iso().required()
+});
+ 
+// POST /competitions/start
+router.post("/start", adminRequired, function (req, res, next) {
+    // do validation
+    const result = schema_add.validate(req.body);
+    if (result.error) {
+        res.render("competitions/start", { result: { validation_error: true, display_form: true } });
+        return;
+    }
+ 
+    const stmt = db.prepare("INSERT INTO start (name, email, date, question) VALUES (?, ?, ?, ?);");
+    const insertResult = stmt.run(req.body.name, req.body.email, req.body.date, req.body.question);
+ 
+    if (insertResult.changes && insertResult.changes === 1) {
+        res.render("competitions/start", { result: { success: true } });
+    } else {
+        res.render("competitions/start", { result: { database_error: true } });
+    }
+});
  
 module.exports = router;
